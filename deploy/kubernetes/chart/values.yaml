@@ -1,5 +1,5 @@
 # The hostname for the deployment
-hostname:
+hostname: esgf-data.k8s.ucar.edu
 
 ###
 # Image defaults
@@ -8,13 +8,13 @@ hostname:
 image:
   # The image prefix to use
   # If using a private registry, change this, e.g. registry.ceda.ac.uk/esgfdeploy
-  prefix: esgfdeploy
+  prefix: hub.k8s.ucar.edu/docker/esgfdeploy
   # The tag to use
-  tag: latest
+  tag: ad5bff91
   # Indicates whether images should be pulled every time a pod starts
   # When using mutable tags, like latest or branch names, this should be Always
   # When using immutable tags, like commit shas or release tags, this should be IfNotPresent
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
   # A list of names of existing secrets providing Docker registry credentials
   # Required if using a private registry that requires authentication
   # See https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
@@ -29,7 +29,8 @@ globalLabels: {}
 ingress:
   # The annotations for the ingress
   # Depending on your Kubernetes cluster, this can be used to configure things like Let's Encrypt certificates
-  annotations: {}
+  annotations:
+    cert-manager.io/cluster-issuer: "incommon"
   # Extra labels to apply to the ingress resources
   labels: {}
   # Sign-in URL for unauthenticated requests
@@ -39,7 +40,7 @@ ingress:
     enabled: true
     # Either give the name of an existing TLS secret
     # See https://kubernetes.io/docs/concepts/services-networking/ingress/#tls
-    secretName:
+    secretName: incommon-cert-sage-esgf-data-node-ncar
     # Or provide a PEM-encoded certificate (including chain) and key as variables
     pem:
       cert:
@@ -190,7 +191,7 @@ data:
   #   volumeSpec: A Kubernetes volume specification - see https://kubernetes.io/docs/concepts/storage/volumes/
   #   mountOptions (optional): Additional options for the mount, e.g. mountPropagation for hostPath volumes
   #   name (optional): The name for the volume - if not given, this is derived from the mount path
-  mounts: []
+  # mounts: []
     # - name: datacentre   # This is actually the derived name that would be used anyway
     #   mountPath: /datacentre
     #   volumeSpec:
@@ -198,6 +199,23 @@ data:
     #       path: /datacentre
     #   mountOptions:
     #     mountPropagation: HostToContainer
+  mounts:
+    - name: CMIP5
+      mountPath: /esg/data/cmip5
+      volumeSpec:
+        nfs:
+          server: gladedm1.ucar.edu
+          path: /gpfs/csfs1/collections/cdg/data/cmip5
+          readOnly: true
+      mountOptions: {}
+    - name: CMIP6
+      mountPath: /esg/data/cmip6
+      volumeSpec:
+        nfs:
+          server: gladedm1.ucar.edu
+          path: /gpfs/csfs1/collections/cdg/data/CMIP6
+          readOnly: true
+      mountOptions: {}
 
   # List of datasets to expose
   # For each dataset, a THREDDS datasetScan element and an Nginx location are generated
@@ -208,11 +226,18 @@ data:
   #   path: The URL path for the dataset
   #   location: The location of the dataset *inside the container* (see mounts above)
   #   filters (optional): A list of filter specifications for the datasetScan element
-  datasets: []
+  #datasets: []
     # e.g.
     # - name: CMIP5
     #   path: esg_dataroot
     #   location: /datacentre/archiveroots/archive/badc/cmip5/data
+  datasets:
+    - name: CMIP5
+      path: esg_cmip5
+      location: /esg/data/cmip5
+    - name: CMIP6
+      path: esg_cmip6
+      location: /esg/data/cmip6
 
   # The pod and container security contexts for data serving pods
   # In particular, these may be required if using hostPath volumes for data, depending
@@ -297,7 +322,14 @@ data:
     # Volume containing pre-existing THREDDS catalogs
     # If not given, a catalog will be generated containing datasetScan elements for the configured datasets
     # Format is the same as items in mounts except that name and mountPath are ignored
-    catalogVolume: {}
+    #catalogVolume: {}
+    catalogVolume:
+      volumeSpec:
+        nfs:
+          server: gladedm1.ucar.edu
+          path: /gpfs/csfs1/collections/cdg/cache/esgf-data-node-old/esg/content/thredds/esgcet
+          readOnly: true
+      mountOptions: {}
     # Configuration for the node-local cache
     # If the local cache is enabled, catalogs will be copied to the local disk of each node
     # where THREDDS pods will run, and will be loaded from there by the THREDDS pods
@@ -391,7 +423,7 @@ data:
 ###
 index:
   # Indicates if any index node components are to be enabled
-  enabled: true
+  enabled: false
 
   # Configuration for Solr
   solr:
