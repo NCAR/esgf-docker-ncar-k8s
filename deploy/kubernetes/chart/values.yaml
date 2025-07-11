@@ -31,6 +31,7 @@ ingress:
   # Depending on your Kubernetes cluster, this can be used to configure things like Let's Encrypt certificates
   annotations:
     cert-manager.io/cluster-issuer: "incommon"
+    kubernetes.io/ingress.class: "nginx-external"
   # Extra labels to apply to the ingress resources
   labels: {}
   # Sign-in URL for unauthenticated requests
@@ -200,7 +201,7 @@ data:
     #   mountOptions:
     #     mountPropagation: HostToContainer
   mounts:
-    - name: CMIP5
+    - name: cmip5
       mountPath: /esg/data/cmip5
       volumeSpec:
         nfs:
@@ -208,7 +209,7 @@ data:
           path: /gpfs/csfs1/collections/cdg/data/cmip5
           readOnly: true
       mountOptions: {}
-    - name: CMIP6
+    - name: cmip6
       mountPath: /esg/data/cmip6
       volumeSpec:
         nfs:
@@ -232,10 +233,10 @@ data:
     #   path: esg_dataroot
     #   location: /datacentre/archiveroots/archive/badc/cmip5/data
   datasets:
-    - name: CMIP5
+    - name: cmip5
       path: esg_cmip5
       location: /esg/data/cmip5
-    - name: CMIP6
+    - name: cmip6
       path: esg_cmip6
       location: /esg/data/cmip6
 
