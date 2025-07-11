@@ -9,7 +9,6 @@ metadata:
     {{ toYaml . | nindent 4 }}
     {{- end }}
 spec:
-  ingressClassName: nginx-internal
   {{ include "esgf.ingress.tls" . | indent 2 }}
   rules:
     - host: {{ .Values.hostname | quote }}
