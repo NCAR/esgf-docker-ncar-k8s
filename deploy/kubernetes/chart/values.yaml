@@ -324,14 +324,7 @@ data:
     # Volume containing pre-existing THREDDS catalogs
     # If not given, a catalog will be generated containing datasetScan elements for the configured datasets
     # Format is the same as items in mounts except that name and mountPath are ignored
-    #catalogVolume: {}
-    catalogVolume:
-      volumeSpec:
-        nfs:
-          server: gladedm1.ucar.edu
-          path: /gpfs/csfs1/collections/cdg/cache/esgf-data-node-old/esg/content/thredds
-          readOnly: true
-      mountOptions: {}
+    catalogVolume: {}
     # Configuration for the node-local cache
     # If the local cache is enabled, catalogs will be copied to the local disk of each node
     # where THREDDS pods will run, and will be loaded from there by the THREDDS pods
@@ -386,6 +379,14 @@ data:
     config:
       catalog.xml:
       threddsConfig.xml:
+    useImageToplevelCatalog: true
+    esgcetVolume:
+      volumeSpec:
+        nfs:
+          server: gladedm1.ucar.edu
+          path: /gpfs/csfs1/collections/cdg/cache/esgf-data-node-old/esg/content/thredds/esgcet
+          readOnly: true
+      mountOptions: {}
 
   # Configuration for the file server pod
   fileServer:

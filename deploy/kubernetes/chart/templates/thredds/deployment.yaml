@@ -137,6 +137,7 @@ spec:
           securityContext: {{ toYaml . | nindent 12 }}
           {{- end }}
           volumeMounts:
+            {{- if not $thredds.useImageToplevelCatalog }}
             - name: thredds-catalogs
               mountPath: /opt/tomcat/content/thredds/catalog.xml
               subPath: catalog.xml
@@ -146,10 +147,15 @@ spec:
               {{ toYaml . | indent 14 | trim }}
               {{- end }}
               {{- end }}
+            {{- end }}
             - name: thredds-config
               mountPath: /opt/tomcat/content/thredds/threddsConfig.xml
               subPath: threddsConfig.xml
               readOnly: true
+            {{- if $thredds.useImageToplevelCatalog }}
+            - name: thredds-esgcet
+              mountPath: /opt/tomcat/content/thredds/esgcet
+            {{- end }}
             - name: thredds-work
               mountPath: /opt/tomcat/content/thredds
             # The shared log volume is only required if the access log sidecar is enabled
@@ -202,6 +208,7 @@ spec:
       tolerations: {{ toYaml . | nindent 8 }}
       {{- end }}
       volumes:
+        {{- if not $thredds.useImageToplevelCatalog }}
         {{- if (and $thredds.catalogVolume $thredds.localCache.enabled) }}
         - name: thredds-catalogs
           hostPath:
@@ -217,9 +224,14 @@ spec:
           configMap:
             name: {{ include "esgf.component.fullname" (list . "thredds") }}-catalog
         {{- end }}
+        {{- end }}
         - name: thredds-config
           configMap:
             name: {{ include "esgf.component.fullname" (list . "thredds") }}-config
+        {{- if $thredds.useImageToplevelCatalog }}
+        - name: thredds-esgcet
+          {{ toYaml $thredds.esgcetVolume.volumeSpec | indent 10 | trim }}
+        {{- end }}
         # When ran with an arbitrary uid, give Thredds a writable space to copy its files into
         - name: thredds-work
           emptyDir: {}
