@@ -1,5 +1,5 @@
 {{- $thredds := .Values.data.thredds -}}
-{{- if (and .Values.data.enabled $thredds.enabled (not $thredds.catalogVolume))  -}}
+{{- if (and .Values.data.enabled $thredds.enabled (not $thredds.catalogVolume) (not $thredds.useImageDefaults))  -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:

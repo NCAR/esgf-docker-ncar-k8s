@@ -202,16 +202,8 @@ data:
     #   mountOptions:
     #     mountPropagation: HostToContainer
   mounts:
-    - name: cmip5
-      mountPath: /esg/data/cmip5
-      volumeSpec:
-        nfs:
-          server: gladedm1.ucar.edu
-          path: /gpfs/csfs1/collections/cdg/data/cmip5
-          readOnly: true
-      mountOptions: {}
     - name: cmip6
-      mountPath: /esg/data/cmip6
+      mountPath: /esg/data/CMIP6
       volumeSpec:
         nfs:
           server: gladedm1.ucar.edu
@@ -234,12 +226,9 @@ data:
     #   path: esg_dataroot
     #   location: /datacentre/archiveroots/archive/badc/cmip5/data
   datasets:
-    - name: cmip5
-      path: esg_cmip5
-      location: /esg/data/cmip5
     - name: cmip6
-      path: esg_cmip6
-      location: /esg/data/cmip6
+      path: esg_dataroot
+      location: /esg/data
 
   # The pod and container security contexts for data serving pods
   # In particular, these may be required if using hostPath volumes for data, depending
@@ -254,7 +243,7 @@ data:
     fsGroup: 1000
   securityContext:
     # Run with a read-only root filesystem by default
-    readOnlyRootFilesystem: true
+    readOnlyRootFilesystem: false
     # The containers will run as the ESGF user by default
     runAsNonRoot: true
     allowPrivilegeEscalation: false
@@ -324,14 +313,7 @@ data:
     # Volume containing pre-existing THREDDS catalogs
     # If not given, a catalog will be generated containing datasetScan elements for the configured datasets
     # Format is the same as items in mounts except that name and mountPath are ignored
-    #catalogVolume: {}
-    catalogVolume:
-      volumeSpec:
-        nfs:
-          server: gladedm1.ucar.edu
-          path: /gpfs/csfs1/collections/cdg/cache/esgf-data-node-old/esg/content/thredds/esgcet
-          readOnly: true
-      mountOptions: {}
+    catalogVolume: {}
     # Configuration for the node-local cache
     # If the local cache is enabled, catalogs will be copied to the local disk of each node
     # where THREDDS pods will run, and will be loaded from there by the THREDDS pods
@@ -365,7 +347,7 @@ data:
       #         averageUtilization: 70
     # The startup time for the THREDDS container
     # For large pre-existing catalogs, this maybe need to be large (default 5 mins)
-    startTimeout: 36000
+    startTimeout: 18000
     # The resource allocations for the THREDDS container
     # See https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
     resources: {}
@@ -386,6 +368,16 @@ data:
     config:
       catalog.xml:
       threddsConfig.xml:
+    useImageDefaults: true
+    esgcetVolume:
+      volumeSpec:
+        nfs:
+          server: gladedm1.ucar.edu
+          path: /gpfs/csfs1/collections/cdg/cache/esgf-data-node-old/esg/content/thredds/esgcet
+          readOnly: true
+      mountOptions: {}
+         # path: /gpfs/csfs1/collections/cdg/cache/esgf-data-node-old/esg/content/thredds/esgcet
+         # path: /gpfs/csfs1/collections/cdg/catalogs/esgf-data-node-cirrus-test-esgcet
 
   # Configuration for the file server pod
   fileServer:
