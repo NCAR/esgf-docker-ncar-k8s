@@ -211,7 +211,7 @@ data:
           readOnly: true
       mountOptions: {}
     - name: cmip6
-      mountPath: /esg/data/cmip6
+      mountPath: /esg/data/CMIP6
       volumeSpec:
         nfs:
           server: gladedm1.ucar.edu
