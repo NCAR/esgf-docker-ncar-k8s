@@ -329,7 +329,7 @@ data:
       volumeSpec:
         nfs:
           server: gladedm1.ucar.edu
-          path: /gpfs/csfs1/collections/cdg/cache/esgf-data-node-old/esg/content/thredds/esgcet
+          path: /gpfs/csfs1/collections/cdg/cache/esgf-data-node-old/esg/content/thredds
           readOnly: true
       mountOptions: {}
     # Configuration for the node-local cache
