@@ -137,7 +137,6 @@ spec:
           securityContext: {{ toYaml . | nindent 12 }}
           {{- end }}
           volumeMounts:
-            {{- if not $thredds.useImageToplevelCatalog }}
             - name: thredds-catalogs
               mountPath: /opt/tomcat/content/thredds/catalog.xml
               subPath: catalog.xml
@@ -147,6 +146,7 @@ spec:
               {{ toYaml . | indent 14 | trim }}
               {{- end }}
               {{- end }}
+            {{- if not $thredds.useImageToplevelCatalog }}
             - name: thredds-config
               mountPath: /opt/tomcat/content/thredds/threddsConfig.xml
               subPath: threddsConfig.xml
@@ -206,7 +206,6 @@ spec:
       tolerations: {{ toYaml . | nindent 8 }}
       {{- end }}
       volumes:
-        {{- if not $thredds.useImageToplevelCatalog }}
         {{- if (and $thredds.catalogVolume $thredds.localCache.enabled) }}
         - name: thredds-catalogs
           hostPath:
@@ -222,6 +221,7 @@ spec:
           configMap:
             name: {{ include "esgf.component.fullname" (list . "thredds") }}-catalog
         {{- end }}
+        {{- if not $thredds.useImageToplevelCatalog }}
         - name: thredds-config
           configMap:
             name: {{ include "esgf.component.fullname" (list . "thredds") }}-config
