@@ -147,11 +147,11 @@ spec:
               {{ toYaml . | indent 14 | trim }}
               {{- end }}
               {{- end }}
-            {{- end }}
             - name: thredds-config
               mountPath: /opt/tomcat/content/thredds/threddsConfig.xml
               subPath: threddsConfig.xml
               readOnly: true
+            {{- end }}
             {{- if $thredds.useImageToplevelCatalog }}
             - name: thredds-esgcet
               mountPath: /opt/tomcat/content/thredds/esgcet
@@ -222,10 +222,10 @@ spec:
           configMap:
             name: {{ include "esgf.component.fullname" (list . "thredds") }}-catalog
         {{- end }}
-        {{- end }}
         - name: thredds-config
           configMap:
             name: {{ include "esgf.component.fullname" (list . "thredds") }}-config
+        {{- end }}
         {{- if $thredds.useImageToplevelCatalog }}
         - name: thredds-esgcet
           {{ toYaml $thredds.esgcetVolume.volumeSpec | indent 10 | trim }}
