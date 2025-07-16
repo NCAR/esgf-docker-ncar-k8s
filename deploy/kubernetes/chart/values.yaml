@@ -358,7 +358,7 @@ data:
       #         averageUtilization: 70
     # The startup time for the THREDDS container
     # For large pre-existing catalogs, this maybe need to be large (default 5 mins)
-    startTimeout: 36000
+    startTimeout: 360
     # The resource allocations for the THREDDS container
     # See https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
     resources: {}
