@@ -202,14 +202,6 @@ data:
     #   mountOptions:
     #     mountPropagation: HostToContainer
   mounts:
-    - name: cmip5
-      mountPath: /esg/data/cmip5
-      volumeSpec:
-        nfs:
-          server: gladedm1.ucar.edu
-          path: /gpfs/csfs1/collections/cdg/data/cmip5
-          readOnly: true
-      mountOptions: {}
     - name: cmip6
       mountPath: /esg/data/CMIP6
       volumeSpec:
@@ -234,9 +226,6 @@ data:
     #   path: esg_dataroot
     #   location: /datacentre/archiveroots/archive/badc/cmip5/data
   datasets:
-    - name: cmip5
-      path: esg_cmip5
-      location: /esg/data/cmip5
     - name: cmip6
       path: esg_cmip6
       location: /esg/data/cmip6
@@ -358,7 +347,7 @@ data:
       #         averageUtilization: 70
     # The startup time for the THREDDS container
     # For large pre-existing catalogs, this maybe need to be large (default 5 mins)
-    startTimeout: 360
+    startTimeout: 18000
     # The resource allocations for the THREDDS container
     # See https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
     resources: {}
@@ -384,9 +373,10 @@ data:
       volumeSpec:
         nfs:
           server: gladedm1.ucar.edu
-          path: /gpfs/csfs1/collections/cdg/cache/esgf-data-node-old/esg/content/thredds/esgcet
+          path: /gpfs/csfs1/collections/cdg/catalogs/esgf-data-node-cirrus-test-esgcet
           readOnly: true
       mountOptions: {}
+         # path: /gpfs/csfs1/collections/cdg/cache/esgf-data-node-old/esg/content/thredds/esgcet
 
   # Configuration for the file server pod
   fileServer:
