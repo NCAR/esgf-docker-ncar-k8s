@@ -227,7 +227,7 @@ data:
     #   location: /datacentre/archiveroots/archive/badc/cmip5/data
   datasets:
     - name: cmip6
-      path: esg_cmip6
+      path: esg_dataroot
       location: /esg/data/CMIP6
 
   # The pod and container security contexts for data serving pods
