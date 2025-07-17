@@ -243,7 +243,7 @@ data:
     fsGroup: 1000
   securityContext:
     # Run with a read-only root filesystem by default
-    readOnlyRootFilesystem: false
+    readOnlyRootFilesystem: true
     # The containers will run as the ESGF user by default
     runAsNonRoot: true
     allowPrivilegeEscalation: false
