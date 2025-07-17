@@ -137,6 +137,11 @@ spec:
           {{- with .Values.data.securityContext }}
           securityContext: {{ toYaml . | nindent 12 }}
           {{- end }}
+          volumeMounts:
+            {{- if $thredds.useImageToplevelCatalog }}
+            - name: thredds-esgcet
+              mountPath: /opt/tomcat/content/thredds/esgcet
+            {{- end }}
         # If the access log sidecar is enabled, run the sidecar pod
         {{- if $accessLogSidecar.enabled }}
         - name: thredds-log-localhost-access-log
@@ -171,4 +176,9 @@ spec:
       {{- with $thredds.tolerations }}
       tolerations: {{ toYaml . | nindent 8 }}
       {{- end }}
+      volumes:
+        {{- if $thredds.useImageToplevelCatalog }}
+        - name: thredds-esgcet
+          {{ toYaml $thredds.esgcetVolume.volumeSpec | indent 10 | trim }}
+        {{- end }}
 {{- end -}}
