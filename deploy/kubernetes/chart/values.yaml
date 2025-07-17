@@ -228,7 +228,7 @@ data:
   datasets:
     - name: cmip6
       path: esg_dataroot
-      location: /esg/data/CMIP6
+      location: /esg/data
 
   # The pod and container security contexts for data serving pods
   # In particular, these may be required if using hostPath volumes for data, depending
