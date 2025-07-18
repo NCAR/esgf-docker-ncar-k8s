@@ -138,9 +138,26 @@ spec:
           securityContext: {{ toYaml . | nindent 12 }}
           {{- end }}
           volumeMounts:
-            {{- if $thredds.useImageToplevelCatalog }}
+            {{- if $thredds.useImageDefaults }}
             - name: thredds-esgcet
               mountPath: /opt/tomcat/content/thredds/esgcet
+            {{- end }}
+            {{- if not $thredds.useImageDefaults }}
+            - name: thredds-catalogs
+              mountPath: /opt/tomcat/content/thredds/catalog.xml
+              subPath: catalog.xml
+              readOnly: true
+              {{- if (and $thredds.catalogVolume (not $thredds.localCache.enabled)) }}
+              {{- with (omit (default dict $thredds.catalogVolume.mountOptions) "readOnly") }}
+              {{ toYaml . | indent 14 | trim }}
+              {{- end }}
+              {{- end }}
+            - name: thredds-config
+              mountPath: /opt/tomcat/content/thredds/threddsConfig.xml
+              subPath: threddsConfig.xml
+              readOnly: true
+            - name: thredds-work
+              mountPath: /opt/tomcat/content/thredds
             {{- end }}
             # The shared log volume is only required if the access log sidecar is enabled
             # It is also required for a readOnly root filesystem.
@@ -192,9 +209,32 @@ spec:
       tolerations: {{ toYaml . | nindent 8 }}
       {{- end }}
       volumes:
-        {{- if $thredds.useImageToplevelCatalog }}
+        {{- if $thredds.useImageDefaults }}
         - name: thredds-esgcet
           {{ toYaml $thredds.esgcetVolume.volumeSpec | indent 10 | trim }}
+        {{- end }}
+        {{- if not $thredds.useImageDefaults }}
+        {{- if (and $thredds.catalogVolume $thredds.localCache.enabled) }}
+        - name: thredds-catalogs
+          hostPath:
+            path: {{ printf "%s/%s/%s/catalogs" $thredds.localCache.pathPrefix .Release.Namespace .Release.Name | quote }}
+        - name: thredds-cache-shared
+          hostPath:
+            path: {{ printf "%s/%s/%s/cache" $thredds.localCache.pathPrefix .Release.Namespace .Release.Name | quote }}
+        {{- else if $thredds.catalogVolume }}
+        - name: thredds-catalogs
+          {{ toYaml $thredds.catalogVolume.volumeSpec | indent 10 | trim }}
+        {{- else }}
+        - name: thredds-catalogs
+          configMap:
+            name: {{ include "esgf.component.fullname" (list . "thredds") }}-catalog
+        {{- end }}
+        - name: thredds-config
+          configMap:
+            name: {{ include "esgf.component.fullname" (list . "thredds") }}-config
+        # When ran with an arbitrary uid, give Thredds a writable space to copy its files into
+        - name: thredds-work
+          emptyDir: {}
         {{- end }}
         # In order to use a read-only rootfs, we must put emptyDirs where we expect tomcat to write
         - name: tomcat-temp

@@ -368,7 +368,7 @@ data:
     config:
       catalog.xml:
       threddsConfig.xml:
-    useImageToplevelCatalog: true
+    useImageDefaults: true
     esgcetVolume:
       volumeSpec:
         nfs:
