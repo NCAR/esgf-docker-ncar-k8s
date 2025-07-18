@@ -142,8 +142,6 @@ spec:
             - name: thredds-esgcet
               mountPath: /opt/tomcat/content/thredds/esgcet
             {{- end }}
-            - name: thredds-work
-              mountPath: /opt/tomcat/content/thredds
             # The shared log volume is only required if the access log sidecar is enabled
             # It is also required for a readOnly root filesystem.
             - name: tomcat-logs
@@ -198,9 +196,6 @@ spec:
         - name: thredds-esgcet
           {{ toYaml $thredds.esgcetVolume.volumeSpec | indent 10 | trim }}
         {{- end }}
-        # When ran with an arbitrary uid, give Thredds a writable space to copy its files into
-        - name: thredds-work
-          emptyDir: {}
         # In order to use a read-only rootfs, we must put emptyDirs where we expect tomcat to write
         - name: tomcat-temp
           emptyDir: {}
