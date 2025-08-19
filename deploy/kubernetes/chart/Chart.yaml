@@ -2,5 +2,5 @@ apiVersion: v2
 name: sage-esgf-data-node-ncar
 description: Helm chart for deploying the ESGF Data Node on Kubernetes at NCAR.
 type: application
-version: 0.1.0
+version: 0.1.1
 appVersion: "0.1.0"

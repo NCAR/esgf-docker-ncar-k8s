@@ -1,5 +1,8 @@
 # The hostname for the deployment
-hostname: esgf-data.k8s.ucar.edu
+hostname: esgf-data.test.ucar.edu
+
+# The hostname for the DNS alias
+hostnameDNSAlias: esgf-data.k8s.ucar.edu
 
 ###
 # Image defaults

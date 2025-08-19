@@ -65,3 +65,56 @@ spec:
                   number: 8080
           {{- end }}
           {{- end }}
+    - host: {{ .Values.hostnameDNSAlias | quote }}
+      http:
+        paths:
+          {{- if .Values.data.enabled }}
+          {{- if .Values.data.thredds.enabled }}
+          - path: /thredds
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "esgf.component.fullname" (list . "thredds") }}
+                port:
+                  number: 8080
+          {{- end }}
+          {{- if .Values.data.fileServer.enabled }}
+          - path: /thredds/fileServer
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "esgf.component.fullname" (list . "fileServer") }}
+                port:
+                  number: 8080
+          {{- end }}
+          {{- end }}
+          {{- if .Values.index.enabled }}
+          {{- if .Values.index.solr.enabled }}
+          # We only want to permit access to the replication handler for each core from outside
+          # However wildcard paths are not supported on all ingress controllers
+          # So we make a path definition for each core
+          - path: /solr/aggregations/replication
+            pathType: Prefix
+            backend: &solr
+              # We point to the Solr slave
+              service:
+                name: {{ include "esgf.component.fullname" (list . "solr" "slave") }}
+                port:
+                  number: 8983
+          - path: /solr/datasets/replication
+            pathType: Prefix
+            backend: *solr
+          - path: /solr/files/replication
+            pathType: Prefix
+            backend: *solr
+          {{- end }}
+          {{- if .Values.index.search.enabled }}
+          - path: /esg-search
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "esgf.component.fullname" (list . "search") }}
+                port:
+                  number: 8080
+          {{- end }}
+          {{- end }}
