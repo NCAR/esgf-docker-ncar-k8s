@@ -1,5 +1,5 @@
 # The hostname for the deployment
-hostname: esgf-data.test.ucar.edu
+hostname: esgf-data.ucar.edu
 
 # The hostname for the DNS alias
 hostnameDNSAlias: esgf-data.k8s.ucar.edu
@@ -34,8 +34,8 @@ ingress:
   # Depending on your Kubernetes cluster, this can be used to configure things like Let's Encrypt certificates
   annotations:
     cert-manager.io/cluster-issuer: "incommon"
-    kubernetes.io/ingress.class: "nginx-internal"
-  className: nginx-internal
+    kubernetes.io/ingress.class: "nginx-external"
+  className: nginx-external
   # Extra labels to apply to the ingress resources
   labels: {}
   # Sign-in URL for unauthenticated requests
